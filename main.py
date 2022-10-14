@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.gaussian_process.kernels import WhiteKernel, RBF
 
+from joblib import load
+
 
 RANDOM_STATE = 35
 scaler = MinMaxScaler()
@@ -45,19 +47,23 @@ grid_params = dict(
     n_restarts_optimizer=[30, 35, 40, 55, 60]
 )
 
-best_score, best_parameters = gpr1.grid_search_cv_gpr(
-    X, y, grid_params, 5, True)
+gpr1.grid_search_cv_gpr(X, y, grid_params, 5, True)
 
-# Train and Evaluate
-score, y_pred = gpr1.gaussian_process_regression(
-    best_parameters, X_train, X_test, y_train, y_test)
+best_parameters = load('gpr_params.joblib')
+if best_parameters:
+    # Train and Evaluate
+    score, y_pred = gpr1.gaussian_process_regression(
+        best_parameters, X_train, X_test, y_train, y_test)
 
-# Cross Validation
-scores_mean, scores_std = gpr1.gpr_cross_validation(
-    X, y, best_parameters, 5, True)
+    # Cross Validation
+    scores_mean, scores_std = gpr1.gpr_cross_validation(
+        X, y, best_parameters, 5, True)
 
-print(f'\nThe best parameters are: {best_parameters}')
-print('\n-------------------------------------------------')
-print(f'The MSE score for GPR model: {score}')
-print('\n-------------------------------------------------')
-print(f'The average score of K-Fold cross validation: {scores_mean}\n')
+    print(f'\nThe best parameters are: {best_parameters}')
+    print('\n-------------------------------------------------')
+    print(f'The MSE score for GPR model: {score}')
+    print('\n-------------------------------------------------')
+    print(f'The average score of K-Fold cross validation: {scores_mean}\n')
+else:
+    print('Cannot find the parameters in current directory!!!')
+
