@@ -10,6 +10,8 @@ from sklearn.model_selection import KFold
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import WhiteKernel, RBF
 
+from joblib import dump
+
 class Gpr():
     def __init__(self, random_state=35) -> None:
        self.random_state = random_state
@@ -25,7 +27,7 @@ class Gpr():
         return score, y_pred
      
     # GridSearchCV for Gaussian Process Regression
-    def grid_search_cv_gpr(self, X,y, grid_params, cv_n_splits, cv_shuffle, scorer = 'neg_mean_squared_error') -> Tuple:
+    def grid_search_cv_gpr(self, X,y, grid_params, cv_n_splits, cv_shuffle, scorer = 'neg_mean_squared_error') -> None:
         cv = KFold(n_splits=cv_n_splits,
                    random_state=self.random_state,
                    shuffle=cv_shuffle)
@@ -39,8 +41,8 @@ class Gpr():
                                         n_jobs=-1,
                                         )
         gpr_grid_search.fit(X,y)
-
-        return gpr_grid_search.best_score_, gpr_grid_search.best_params_
+        dump(gpr_grid_search.best_params_, "gpr_params.joblib")
+        
 
     # Gaussian Process Regression Cross Validation
     def gpr_cross_validation(self, X,y, parameters, cv_n_splits, cv_shuffle, scorer='neg_mean_squared_error') -> Tuple:
