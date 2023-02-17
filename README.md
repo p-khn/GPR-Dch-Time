@@ -1,1 +1,1 @@
-# Remaining Discharge Time Estimation with GPR
+# Remaining Discharge Time Estimation for Lithium-ion Batteries with GPR
